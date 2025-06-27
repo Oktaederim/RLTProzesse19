@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="UTF-8">
@@ -57,7 +57,6 @@
                         <label for="tempZuluft">Temperatur (°C)</label>
                         <input type="number" id="tempZuluft" value="20.0" step="0.1" min="0" max="60">
                     </div>
-                    <!-- Standardwert für Zuluftfeuchte auf 60% geändert -->
                     <div class="input-group" id="sollFeuchteWrapper">
                         <label for="rhZuluft">Relative Feuchte (%)</label>
                         <input type="number" id="rhZuluft" value="60.0" step="0.1" min="0" max="100">
@@ -130,22 +129,20 @@
             <div class="cost-inputs-wrapper">
                  <h4>Kostensätze</h4>
                  <div class="grid-container cost-inputs-grid">
-                     <div class="input-group"><label for="preisWaerme">Preis Wärme (€/kWh)</label><input type="number" id="preisWaerme" value="0.22" step="0.01"></div>
-                     <div class="input-group"><label for="preisKaelte">Preis Kälteenergie (€/kWh)</label><input type="number" id="preisKaelte" value="0.33" step="0.01"></div>
-                     <div class="input-group"><label for="preisStrom">Preis Strom (€/kWh)</label><input type="number" id="preisStrom" value="0.26" step="0.01"></div>
+                    <div class="input-group"><label for="preisWaerme">Preis Wärme (€/kWh)</label><input type="number" id="preisWaerme" value="0.22" step="0.01"></div>
+                    <div class="input-group"><label for="preisKaelte">Preis Kälteenergie (€/kWh)</label><input type="number" id="preisKaelte" value="0.33" step="0.01"></div>
+                    <div class="input-group"><label for="preisStrom">Preis Strom (€/kWh)</label><input type="number" id="preisStrom" value="0.26" step="0.01"></div>
                 </div>
                 <hr>
-                <!-- Schalter für Ventilatorkosten entfernt -->
                 <h4>Ventilator-Betriebskosten</h4>
                  <div class="grid-container fan-cost-grid">
                       <div class="input-group">
-                          <label for="sfp">Spez. Ventilatorleistung (SFP)</label>
-                          <input type="number" id="sfp" value="0.555" step="0.001" min="0">
-                      </div>
+                           <label for="sfp">Spez. Ventilatorleistung (SFP)</label>
+                           <input type="number" id="sfp" value="0.555" step="0.001" min="0">
+                       </div>
                       <div class="input-group-inline">
                         <label>Gesamt-Betriebszeit (h/a oder d/a)</label>
                         <div>
-                            <!-- Standard-Betriebszeit auf 8760h / 365d geändert -->
                             <input type="number" id="betriebsstundenGesamt" value="8760" step="10" min="0" title="Gesamt-Betriebsstunden pro Jahr">
                             <input type="number" id="betriebstageGesamt" value="365" step="1" min="0" title="Gesamt-Betriebstage pro Jahr">
                         </div>
@@ -167,20 +164,11 @@
                      <div class="slider-group"><label>Zuluft-Temperatur: <span id="tempZuluftLabel">20,0</span> °C</label><input type="range" id="tempZuluftSlider" min="14" max="26" step="0.1" value="20.0"></div>
                      <div class="slider-group" id="rhZuluftSliderGroup"><label>Zuluft-Rel. Feuchte: <span id="rhZuluftLabel">60,0</span> %</label><input type="range" id="rhZuluftSlider" min="30" max="70" step="0.5" value="60.0"></div>
                     
-                    <!-- Referenz-Abweichungen nun permanent sichtbar -->
-                    <div id="reference-details">
-                        <hr>
-                        <div class="cost-display change reference"><span class="cost-label">Referenzkosten:</span><span class="cost-value" id="kostenReferenz">--</span></div>
-                        <div class="cost-display change"><span class="cost-label">Δ Kosten:</span><span class="cost-value" id="kostenAenderung">--</span></div>
-                        <div class="cost-display change parameter"><span class="cost-label">Δ Temperatur:</span><span class="cost-value" id="tempAenderung">--</span></div>
-                        <div class="cost-display change parameter"><span class="cost-label">Δ Feuchte:</span><span class="cost-value" id="rhAenderung">--</span></div>
-                        <div class="cost-display change parameter"><span class="cost-label">Δ Volumenstrom:</span><span class="cost-value" id="volumenAenderung">--</span></div>
-                    </div>
-                    <!-- 'Referenz festlegen'-Button hierher verschoben -->
                     <button id="setReferenceBtn">Referenz festlegen</button>
+
+                    <div id="reference-details"><hr><div class="cost-display change reference"><span class="cost-label">Referenzkosten:</span><span class="cost-value" id="kostenReferenz">--</span></div><div class="cost-display change"><span class="cost-label">Δ Kosten:</span><span class="cost-value" id="kostenAenderung">--</span></div><div class="cost-display change parameter"><span class="cost-label">Δ Temperatur:</span><span class="cost-value" id="tempAenderung">--</span></div><div class="cost-display change parameter"><span class="cost-label">Δ Feuchte:</span><span class="cost-value" id="rhAenderung">--</span></div><div class="cost-display change parameter"><span class="cost-label">Δ Volumenstrom:</span><span class="cost-value" id="volumenAenderung">--</span></div></div>
                 </div>
 
-                <!-- Rechte Spalte: Kosten und Jahresbilanz -->
                 <div class="cost-output-section">
                     <h4>Leistung & Betriebskosten (€/h)</h4>
                     <div class="cost-display power-summary"><span class="cost-label">Gesamtleistung Wärme:</span><span class="cost-value" id="gesamtleistungWaerme">0,00 kW</span></div>
@@ -188,38 +176,36 @@
                     <hr>
                     <div class="cost-display" title=""><span class="cost-label">Heizkosten:</span><span class="cost-value" id="kostenHeizung">0,00 €/h</span></div>
                     <div class="cost-display" title=""><span class="cost-label">Kühlkosten:</span><span class="cost-value" id="kostenKuehlung">0,00 €/h</span></div>
-                    <!-- 'hidden'-Klasse entfernt -->
                     <div class="cost-display fan-cost-display" title=""><span class="cost-label">Ventilatorkosten:</span><span class="cost-value" id="kostenVentilator">0,00 €/h</span></div>
                     <hr>
                     <div class="cost-display total"><span class="cost-label">Gesamtkosten:</span><span class="cost-value" id="kostenGesamt">0,00 €/h</span></div>
                     
                     <hr class="section-divider">
                     
-                    <!-- Jahresbilanz-Block am Ende der rechten Spalte -->
-                    <h4 class="annual-cost-header">Jahresbilanz (Richtwert)</h4>
-                    <div class="input-group">
-                        <label for="stundenHeizen">Heizstunden pro Jahr (für therm. Energie)</label>
-                        <input type="number" id="stundenHeizen" value="1800" step="10" min="0">
+                    <div id="annual-cost-estimation">
+                        <h4 class="annual-cost-header">Jahresbilanz (Richtwert)</h4>
+                        <div class="input-group">
+                            <label for="stundenHeizen">Heizstunden pro Jahr (für therm. Energie)</label>
+                            <input type="number" id="stundenHeizen" value="1800" step="10" min="0">
+                        </div>
+                        <div class="input-group">
+                            <label for="stundenKuehlen">Kühlstunden pro Jahr (für therm. Energie)</label>
+                            <input type="number" id="stundenKuehlen" value="600" step="10" min="0">
+                        </div>
+                        
+                        <h5>Jährlicher Energieverbrauch</h5>
+                        <div class="cost-display"><span class="cost-label">Wärmeverbrauch:</span><span class="cost-value" id="jahresverbrauchWaerme">0 kWh/a</span></div>
+                        <div class="cost-display"><span class="cost-label">Kälteverbrauch:</span><span class="cost-value" id="jahresverbrauchKaelte">0 kWh/a</span></div>
+                        <div class="cost-display fan-cost-display"><span class="cost-label">Strom Ventilator:</span><span class="cost-value" id="jahresverbrauchVentilator">0 kWh/a</span></div>
+                        <hr>
+                        
+                        <h5>Geschätzte Jahreskosten</h5>
+                        <div class="cost-display" title=""><span class="cost-label">Jahreskosten Wärme:</span><span class="cost-value" id="jahreskostenWaerme">0 €/a</span></div>
+                        <div class="cost-display" title=""><span class="cost-label">Jahreskosten Kälte:</span><span class="cost-value" id="jahreskostenKaelte">0 €/a</span></div>
+                        <div class="cost-display fan-cost-display" title=""><span class="cost-label">Jahreskosten Ventilator:</span><span class="cost-value" id="jahreskostenVentilator">0 €/a</span></div>
+                        <hr>
+                        <div class="cost-display total"><span class="cost-label">Gesamtkosten / Jahr:</span><span class="cost-value" id="jahreskostenGesamt">0 €/a</span></div>
                     </div>
-                    <div class="input-group">
-                        <label for="stundenKuehlen">Kühlstunden pro Jahr (für therm. Energie)</label>
-                        <input type="number" id="stundenKuehlen" value="600" step="10" min="0">
-                    </div>
-                    
-                    <h5>Jährlicher Energieverbrauch</h5>
-                    <div class="cost-display"><span class="cost-label">Wärmeverbrauch:</span><span class="cost-value" id="jahresverbrauchWaerme">0 kWh/a</span></div>
-                    <div class="cost-display"><span class="cost-label">Kälteverbrauch:</span><span class="cost-value" id="jahresverbrauchKaelte">0 kWh/a</span></div>
-                    <!-- 'hidden'-Klasse entfernt -->
-                    <div class="cost-display fan-cost-display"><span class="cost-label">Strom Ventilator:</span><span class="cost-value" id="jahresverbrauchVentilator">0 kWh/a</span></div>
-                    <hr>
-                    
-                    <h5>Geschätzte Jahreskosten</h5>
-                    <div class="cost-display" title=""><span class="cost-label">Jahreskosten Wärme:</span><span class="cost-value" id="jahreskostenWaerme">0 €/a</span></div>
-                    <div class="cost-display" title=""><span class="cost-label">Jahreskosten Kälte:</span><span class="cost-value" id="jahreskostenKaelte">0 €/a</span></div>
-                    <!-- 'hidden'-Klasse entfernt -->
-                    <div class="cost-display fan-cost-display" title=""><span class="cost-label">Jahreskosten Ventilator:</span><span class="cost-value" id="jahreskostenVentilator">0 €/a</span></div>
-                    <hr>
-                    <div class="cost-display total"><span class="cost-label">Gesamtkosten / Jahr:</span><span class="cost-value" id="jahreskostenGesamt">0 €/a</span></div>
                 </div>
             </div>
         </div>
