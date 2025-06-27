@@ -1,6 +1,6 @@
 :root {
     --primary-color: #007bff;
-    --secondary-color: #e9ecef; /* Helleres Grau für den Hintergrund */
+    --secondary-color: #e9ecef; 
     --text-color: #212529;
     --border-color: #dee2e6;
     --shadow-color: rgba(0, 0, 0, 0.08);
@@ -50,7 +50,7 @@ hr.light { border-color: #e9ecef; margin: 1rem 0; }
 
 .card-header {
     display: flex; justify-content: space-between; align-items: center;
-    border-bottom: none; padding-bottom: 0; margin-bottom: 0;
+    border-bottom: none; padding-bottom: 0; margin-bottom: 1.5rem;
 }
 .card-header h2 { border-bottom: none; margin-bottom: 0;}
 
@@ -69,14 +69,17 @@ hr.light { border-color: #e9ecef; margin: 1rem 0; }
     border-radius: 8px;
     padding: 1.5rem;
     height: 100%;
+    box-sizing: border-box;
 }
 .input-block-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 1.5rem;
+    margin-bottom: 1.5rem;
 }
 
 .input-group { margin-bottom: 1rem; }
+.input-group:last-child { margin-bottom: 0; }
 .input-group label {
     display: block; font-weight: 500;
     margin-bottom: 0.5rem; color: var(--label-color);
@@ -90,23 +93,27 @@ hr.light { border-color: #e9ecef; margin: 1rem 0; }
     box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
 }
 
+.input-group-inline { display: flex; flex-direction: column; gap: 0.5rem; }
 .input-group-inline > div { display: flex; align-items: center; gap: 0.5rem; }
-.input-group-inline input { flex-grow: 1; }
+.input-group-inline input { flex-grow: 1; min-width: 50px;}
 .unit-label { font-weight: 500; color: var(--label-color); }
 
 .grid-container { display: grid; gap: 1.5rem; }
 .config-grid { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
-.cost-inputs-grid { grid-template-columns: repeat(3, 1fr); align-items: end;}
-.fan-cost-grid, .annual-hours-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); align-items: end;}
+.water-temp-grid { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.cost-inputs-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); align-items: end;}
+.fan-cost-inputs { display: flex; flex-direction: column; gap: 1rem; } /* KORREKTUR: Stacking für SFP und Betriebszeit */
+.annual-hours-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); align-items: end;}
 
 /* --- Schalter & Radios --- */
 .main-config-section { 
-    padding: 1rem; background-color: #e2f3ff; 
-    border-radius: 8px; display: flex; align-items: center; 
-    gap: 2rem; margin-top: 1.5rem;
+    padding: 1rem 1.5rem; 
+    border: none;
+    background-color: #e2f3ff;
 }
-.switch-container { display: flex; align-items: center; gap: 1rem; }
-.switch-label { font-size: 1.2rem; font-weight: bold; color: var(--primary-color); }
+.main-config-section h4 { margin-bottom: 1rem; }
+.switch-container { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 1rem;}
+.switch-label { font-size: 1.1rem; font-weight: bold; color: var(--primary-color); }
 .switch { position: relative; display: inline-block; width: 60px; height: 34px; flex-shrink: 0;}
 .switch input { opacity: 0; width: 0; height: 0; }
 .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; }
@@ -115,10 +122,10 @@ hr.light { border-color: #e9ecef; margin: 1rem 0; }
 input:checked + .slider { background-color: var(--success-color); }
 input:checked + .slider:before { transform: translateX(26px); }
 
-.radio-group-container { display: flex; align-items: center; gap: 1rem; }
+.radio-group-container { display: flex; flex-direction: column; align-items: flex-start; gap: 0.5rem; }
 .radio-group-container > label { font-weight: bold; margin-bottom: 0; }
 .radio-group-container.disabled { opacity: 0.5; }
-.radio-group { display: flex; gap: 1rem; }
+.radio-group { display: flex; gap: 1.5rem; flex-wrap: wrap;}
 .radio-group label { display: flex; align-items: center; gap: 0.3rem; cursor: pointer;}
 
 
@@ -131,10 +138,17 @@ input:checked + .slider:before { transform: translateX(26px); }
 .state-node.inactive, .component-node.inactive { opacity: 0.6; border-style: dashed; background-color: #fafafa;}
 .state-node p { display: flex; justify-content: space-between; margin: 0.3rem 0; font-size: 0.9rem;}
 .state-node p .label { font-weight: 500; color: var(--label-color); margin-right: 0.5rem;}
-.state-node h4, .component-node h5 { margin-bottom: 0.8rem; font-size: 1rem; text-align: center;}
+.state-node h4, .component-node h5 { margin-bottom: 0.8rem; font-size: 1rem; text-align: center; transition: color 0.3s ease-in-out;}
 .final-state { border-width: 3px; }
+
+/* ★ KORREKTUR: Detaillierte Farbgebung für Prozess-Knoten wiederhergestellt */
+.state-node.color-green { border-color: var(--success-color); }
+.state-node.color-green h4 { color: var(--success-color); }
 .state-node.color-red { border-color: var(--danger-color); }
+.state-node.color-red h4 { color: var(--danger-color); }
 .state-node.color-blue { border-color: var(--primary-color); }
+.state-node.color-blue h4 { color: var(--primary-color); }
+
 .arrow { display: none; }
 @media (min-width: 992px) { .arrow { display: flex; align-items: center; font-size: 2rem; color: #ccc; }}
 .process-overview { text-align: center; padding: 1rem; border-radius: 6px; margin-bottom: 1.5rem; font-size: 1.2rem; font-weight: bold; border: 1px solid;}
@@ -145,7 +159,7 @@ input:checked + .slider:before { transform: translateX(26px); }
 
 
 /* --- Analyse & Kosten Sektion --- */
-.cost-grid { grid-template-columns: 1fr; }
+.cost-grid { grid-template-columns: 1fr; gap: 1.5rem;}
 @media (min-width: 1100px) { .cost-grid { grid-template-columns: 1.2fr 1fr; } }
 
 /* Slider Sektion */
@@ -161,6 +175,7 @@ input:checked + .slider:before { transform: translateX(26px); }
 #resetSlidersBtn:hover:not(:disabled) { background-color: var(--primary-color); color: white; }
 #resetSlidersBtn:disabled { border-color: #ccc; color: #ccc; cursor: not-allowed; }
 
+.slider-group { margin-bottom: 1.5rem; }
 input[type="range"] { width: 100%; -webkit-appearance: none; appearance: none; height: 8px; background: #ddd; border-radius: 5px; outline: none; opacity: 0.7; transition: opacity .2s; }
 input[type="range"]:hover { opacity: 1; }
 input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; background: var(--primary-color); cursor: pointer; border-radius: 50%; }
@@ -180,7 +195,6 @@ input[type="range"]::-moz-range-thumb { width: 20px; height: 20px; background: v
 .cost-output-section h4 { border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; }
 h4.annual-cost-header { margin-top: 2rem; }
 
-/* Table-like styling für Ergebnisse */
 .results-table { border: 1px solid var(--border-color); border-radius: 6px; overflow: hidden; margin-top: 1rem; }
 .cost-display {
     display: flex;
@@ -191,20 +205,21 @@ h4.annual-cost-header { margin-top: 2rem; }
     background-color: #fff;
 }
 .results-table .cost-display:last-child { border-bottom: none; }
-.results-table .cost-display:nth-of-type(odd) { background-color: var(--table-stripe-bg); }
+.results-table .cost-display:nth-of-type(2n) { background-color: var(--table-stripe-bg); } /* Zebra-Striping */
 
 .cost-display .cost-label { font-weight: 500; color: var(--text-color); }
 .cost-display .cost-value { font-weight: bold; text-align: right; white-space: nowrap; }
 
-.cost-display.header { background-color: var(--secondary-color); font-weight: bold; }
-.cost-display.total { background-color: #e9ecef; font-size: 1.1rem; }
+.cost-display.header { background-color: #e9ecef; font-weight: bold; }
+.results-table .cost-display.header:nth-of-type(2n) { background-color: #e9ecef; } /* Header immer gleich */
+.cost-display.total { background-color: #e2eaf1; font-size: 1.1rem; }
 .cost-display.total .cost-label, .cost-display.total .cost-value { color: var(--primary-color); font-weight: bold; }
 .cost-value.saving { color: var(--success-color) !important; }
 .cost-value.expense { color: var(--danger-color) !important; }
 
-/* Referenz/Delta Tabelle */
 #reference-details { margin-top: 1rem; }
 #reference-details .cost-display.parameter .cost-label { color: var(--label-color); font-weight: normal; }
 #reference-details .cost-display.reference .cost-label { font-weight: bold; }
+#reference-details .cost-display:nth-of-type(2n) { background-color: #fff; } /* Referenz ohne Streifen */
 
 .footer { text-align: center; margin-top: 2rem; color: #888; font-size: 0.9rem; }
