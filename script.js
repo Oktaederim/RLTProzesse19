@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentTotalCost = 0;
     let currentPowers = { waerme: 0, kaelte: 0 };
 
-    // DOM-Elemente-Sammlung
     const dom = {
         tempAussen: document.getElementById('tempAussen'), rhAussen: document.getElementById('rhAussen'),
         tempZuluft: document.getElementById('tempZuluft'), rhZuluft: document.getElementById('rhZuluft'),
@@ -42,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
         jahresverbrauchWaerme: document.getElementById('jahresverbrauchWaerme'),
         jahresverbrauchKaelte: document.getElementById('jahresverbrauchKaelte'),
         jahresverbrauchVentilator: document.getElementById('jahresverbrauchVentilator'),
-        // fanCostActive wurde entfernt
+        // ★ Änderung: fanCostActive entfernt, da immer aktiv
         sfp: document.getElementById('sfp'),
         betriebsstundenGesamt: document.getElementById('betriebsstundenGesamt'),
         betriebstageGesamt: document.getElementById('betriebstageGesamt'),
@@ -55,18 +54,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const allInteractiveElements = document.querySelectorAll('input, select');
     storeInitialValues(); 
 
-    // Physikalische Konstanten und Toleranzen
     const TOLERANCE = 0.01; const CP_WASSER = 4.186; const RHO_WASSER = 1000;
     const MIN_DEW_POINT = 0.5; 
 
-    // hx-Diagramm Formeln
     function getPs(T) { if (T >= 0) return 611.2 * Math.exp((17.62 * T) / (243.12 + T)); else return 611.2 * Math.exp((22.46 * T) / (272.62 + T)); }
     function getX(T, rH, p) { if (p <= 0) return Infinity; const p_s = getPs(T); const p_v = (rH / 100) * p_s; if (p_v >= p) return Infinity; return 622 * (p_v / (p - p_v)); }
     function getRh(T, x, p) { if (p <= 0) return 0; const p_s = getPs(T); if (p_s <= 0) return 0; const p_v = (p * x) / (622 + x); return Math.min(100, (p_v / p_s) * 100); }
     function getTd(x, p) { const p_v = (p * x) / (622 + x); if (p_v < 611.2) return -60; const log_pv_ratio = Math.log(p_v / 611.2); return (243.12 * log_pv_ratio) / (17.62 - log_pv_ratio); }
     function getH(T, x_g_kg) { if (!isFinite(x_g_kg)) return Infinity; const x_kg_kg = x_g_kg / 1000.0; return 1.006 * T + x_kg_kg * (2501 + 1.86 * T); }
 
-    // Hilfsfunktion zur Einhaltung von min/max-Grenzen bei Zahleneingaben
     function enforceLimits(el) {
         if (!el || el.type !== 'number' || !el.hasAttribute('min')) return;
         const value = parseFloat(el.value);
@@ -78,11 +74,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Hauptberechnungsfunktion
     function calculateAll() {
         try {
             const checkedKuehlmodus = document.querySelector('input[name="kuehlmodus"]:checked');
-            // Alle Eingabewerte sammeln und parsen
             const inputs = {
                 tempAussen: parseFloat(dom.tempAussen.value) || 0, rhAussen: parseFloat(dom.rhAussen.value) || 0,
                 tempZuluft: parseFloat(dom.tempZuluft.value) || 0, rhZuluft: parseFloat(dom.rhZuluft.value) || 0,
@@ -96,6 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 preisKaelte: parseFloat(dom.preisKaelte.value) || 0,
                 stundenHeizen: parseFloat(dom.stundenHeizen.value) || 0,
                 stundenKuehlen: parseFloat(dom.stundenKuehlen.value) || 0,
+                // ★ Änderung: fanCostActive ist jetzt immer 'true'
                 sfp: parseFloat(dom.sfp.value) || 0,
                 betriebsstundenGesamt: parseFloat(dom.betriebsstundenGesamt.value) || 0,
             };
@@ -113,17 +108,17 @@ document.addEventListener('DOMContentLoaded', () => {
                  const zielTaupunkt = getTd(zuluftSoll.x, inputs.druck);
                  
                  if (zielTaupunkt < (parseFloat(dom.tempKuehlVorlauf.value) || 0) + 2.0) {
-                     const errorMsg = `Plausibilitätsfehler: Kühlwassertemperatur (${formatGerman(inputs.tempKuehlVorlauf, 1)}°C) ist zu hoch, um Luft auf den erforderlichen Taupunkt von ${formatGerman(zielTaupunkt, 1)}°C abzukühlen.`;
-                     dom.processOverviewContainer.innerHTML = `<div class="process-overview process-error">${errorMsg}</div>`;
-                     return;
+                    const errorMsg = `Plausibilitätsfehler: Kühlwassertemperatur (${formatGerman(inputs.tempKuehlVorlauf, 1)}°C) ist zu hoch, um Luft auf den erforderlichen Taupunkt von ${formatGerman(zielTaupunkt, 1)}°C abzukühlen.`;
+                    dom.processOverviewContainer.innerHTML = `<div class="process-overview process-error">${errorMsg}</div>`;
+                    return;
                  }
                  if (zielTaupunkt < MIN_DEW_POINT) {
                       dom.processOverviewContainer.innerHTML = `<div class="process-overview process-error">Warnung: Feuchte-Sollwert erfordert Abkühlung unter ${MIN_DEW_POINT}°C.</div>`;
                       return;
                  }
             } else {
-                 zuluftSoll.x = aussen.x;
-                 zuluftSoll.rh = getRh(zuluftSoll.t, zuluftSoll.x, inputs.druck);
+                zuluftSoll.x = aussen.x;
+                zuluftSoll.rh = getRh(zuluftSoll.t, zuluftSoll.x, inputs.druck);
             }
             zuluftSoll.h = getH(zuluftSoll.t, zuluftSoll.x);
 
@@ -187,7 +182,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // Hilfsfunktion zur Formatierung von Zahlen im deutschen Format
     function formatGerman(num, decimals = 0) {
         if (isNaN(num)) return '--';
         return num.toLocaleString('de-DE', {
@@ -196,7 +190,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Rendert alle Ergebnisse auf der UI
     function renderAll(states, operations, inputs) {
         const finalState = states[3];
         const startState = states[0];
@@ -236,12 +229,12 @@ document.addEventListener('DOMContentLoaded', () => {
         dom.gesamtleistungWaerme.textContent = `${formatGerman(currentPowers.waerme, 2)} kW`;
         dom.gesamtleistungKaelte.textContent = `${formatGerman(currentPowers.kaelte, 2)} kW`;
 
-        // Ventilatorkosten immer aktiv
         const leistungVentilator = (inputs.sfp * inputs.volumenstrom) / 1000;
         dom.leistungVentilator.textContent = `${formatGerman(leistungVentilator, 2)} kW`;
         
         const kostenHeizung = currentPowers.waerme * inputs.preisWaerme;
         const kostenKuehlung = currentPowers.kaelte * inputs.preisKaelte;
+        // ★ Änderung: Berechnung immer durchführen, da Ventilator immer aktiv ist.
         const kostenVentilator = leistungVentilator * inputs.preisStrom;
         
         currentTotalCost = kostenHeizung + kostenKuehlung + kostenVentilator;
@@ -254,10 +247,9 @@ document.addEventListener('DOMContentLoaded', () => {
         dom.kostenVentilator.parentElement.title = `${formatGerman(leistungVentilator,2)} kW × ${formatGerman(inputs.preisStrom,2)} €/kWh`;
         dom.kostenGesamt.textContent = `${formatGerman(currentTotalCost, 2)} €/h`;
         
-        // Jahresbilanz
         const jahresVerbrauchWaerme = currentPowers.waerme * inputs.stundenHeizen;
         const jahresVerbrauchKaelte = currentPowers.kaelte * inputs.stundenKuehlen;
-        // Bugfix: Jahresverbrauch Ventilator wird nun korrekt mit Gesamt-Betriebszeit berechnet
+        // ★ Änderung & Bugfix: Berechnung immer und mit korrekter Stundenzahl (betriebsstundenGesamt) durchführen.
         const jahresVerbrauchVentilator = leistungVentilator * inputs.betriebsstundenGesamt;
         
         dom.jahresverbrauchWaerme.textContent = `${formatGerman(jahresVerbrauchWaerme, 0)} kWh/a`;
@@ -275,10 +267,14 @@ document.addEventListener('DOMContentLoaded', () => {
         dom.jahreskostenVentilator.parentElement.title = `${formatGerman(jahresVerbrauchVentilator,0)} kWh/a × ${formatGerman(inputs.preisStrom,2)} €/kWh`;
         dom.jahreskostenGesamt.textContent = `${formatGerman(jahreskostenWaerme + jahreskostenKaelte + jahreskostenVentilator, 0)} €/a`;
         
+        // ★ Änderung: Diese Zeile wird entfernt, da die Anzeige immer sichtbar ist.
+        // dom.fanCostDisplays.forEach(d => d.classList.toggle('hidden', !inputs.fanCostActive));
+        
         dom.setReferenceBtn.className = referenceState ? 'activated' : '';
         dom.setReferenceBtn.textContent = referenceState ? 'Referenz gesetzt' : 'Referenz festlegen';
-        
-        // Referenz-Anzeige wird nun immer dargestellt und bei Bedarf befüllt
+
+        // ★ Änderung: Diese Zeile wird entfernt, da die Anzeige immer sichtbar ist.
+        // dom.referenceDetails.classList.toggle('invisible', !referenceState);
         if (referenceState) {
             dom.kostenReferenz.textContent = `${formatGerman(referenceState.cost, 2)} €/h`;
             const changeAbs = currentTotalCost - referenceState.cost;
@@ -294,13 +290,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const deltaVol = inputs.volumenstrom - referenceState.vol;
             dom.volumenAenderung.textContent = `${deltaVol >= 0 ? '+' : ''}${formatGerman(deltaVol,0)} m³/h`;
         } else {
-             // Setzt Referenz-Anzeige auf '--' zurück, wenn keine Referenz gesetzt ist
-             dom.kostenReferenz.textContent = '--';
-             dom.kostenAenderung.textContent = '--';
-             dom.kostenAenderung.className = 'cost-value';
-             dom.tempAenderung.textContent = '--';
-             dom.rhAenderung.textContent = '--';
-             dom.volumenAenderung.textContent = '--';
+             // Werte zurücksetzen, wenn keine Referenz gesetzt ist
+            dom.kostenReferenz.textContent = '--';
+            dom.kostenAenderung.textContent = '--';
+            dom.tempAenderung.textContent = '--';
+            dom.rhAenderung.textContent = '--';
+            dom.volumenAenderung.textContent = '--';
         }
     }
     
@@ -322,7 +317,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (comp.wv) comp.wv.textContent = formatGerman(wasserstrom, 2);
     }
 
-    // Event Handler
     function handleSetReference() {
         referenceState = { cost: currentTotalCost, temp: parseFloat(dom.tempZuluft.value), rh: parseFloat(dom.rhZuluft.value), vol: parseFloat(dom.volumenstrom.value) };
         dom.resetSlidersBtn.disabled = false;
@@ -358,7 +352,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const checkedKuehlmodus = document.querySelector('input[name="kuehlmodus"]:checked');
         const isDehumidify = checkedKuehlmodus ? checkedKuehlmodus.value === 'dehumidify' : false;
         dom.sollFeuchteWrapper.style.display = isActive && isDehumidify ? 'block' : 'none';
-        dom.rhZuluftSlider.parentElement.style.display = isActive && isDehumidify ? 'block' : 'none';
+        // Der Feuchte-Slider sollte ebenfalls an die Sichtbarkeit gekoppelt sein
+        if(dom.rhZuluftSlider.parentElement) {
+            dom.rhZuluftSlider.parentElement.style.display = isActive && isDehumidify ? 'block' : 'none';
+        }
     }
     
     function syncAllSlidersToInputs(){
@@ -377,10 +374,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (input.id === 'tempZuluft') {
             slider.min = (newValue - 6).toFixed(1);
             slider.max = (newValue + 6).toFixed(1);
-        }
-         if (input.id === 'rhZuluft') {
-            slider.min = (newValue - 30).toFixed(1);
-            slider.max = (newValue + 10).toFixed(1);
         }
         slider.value = newValue;
         label.textContent = isFloat ? formatGerman(newValue, 1) : formatGerman(newValue, 0);
@@ -406,14 +399,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // --- Initialisierung und Event-Listener ---
+    // --- INITIALIZATION: Radically simplified and explicit event listeners ---
     function addEventListeners() {
         // Buttons
         dom.resetBtn.addEventListener('click', resetToDefaults);
         dom.resetSlidersBtn.addEventListener('click', resetSlidersToRef);
         dom.setReferenceBtn.addEventListener('click', handleSetReference);
 
-        // Einfache Eingabefelder
+        // Simple Inputs
         const simpleInputs = [
             dom.tempAussen, dom.rhAussen, dom.druck, dom.preisWaerme, dom.preisStrom,
             dom.preisKaelte, dom.tempHeizVorlauf, dom.tempHeizRuecklauf, 
@@ -423,20 +416,21 @@ document.addEventListener('DOMContentLoaded', () => {
             if (input) input.addEventListener('input', () => { enforceLimits(input); calculateAll(); });
         });
         
-        // Schalter
+        // Toggles and Selects
         if(dom.kuehlerAktiv) dom.kuehlerAktiv.addEventListener('change', () => { handleKuehlerToggle(); calculateAll(); });
+        // ★ Änderung: Event listener for fanCostActive entfernt
         if(dom.kuehlmodusInputs) dom.kuehlmodusInputs.forEach(radio => radio.addEventListener('change', () => { handleKuehlerToggle(); calculateAll(); }));
         
-        // Verknüpfte Eingabefelder (Stunden/Tage)
+        // Linked Inputs (Hours/Days)
         if (dom.betriebsstundenGesamt) dom.betriebsstundenGesamt.addEventListener('input', (e) => { enforceLimits(e.target); updateBetriebszeit(e.target.id); calculateAll(); });
         if (dom.betriebstageGesamt) dom.betriebstageGesamt.addEventListener('input', (e) => { enforceLimits(e.target); updateBetriebszeit(e.target.id); calculateAll(); });
 
-        // Synchronisierte Eingabefelder (Zahlenfelder)
+        // Synced Inputs (Number boxes)
         if (dom.volumenstrom) dom.volumenstrom.addEventListener('input', () => { enforceLimits(dom.volumenstrom); syncAllSlidersToInputs(); calculateAll(); });
         if (dom.tempZuluft) dom.tempZuluft.addEventListener('input', () => { enforceLimits(dom.tempZuluft); syncAllSlidersToInputs(); calculateAll(); });
         if (dom.rhZuluft) dom.rhZuluft.addEventListener('input', () => { enforceLimits(dom.rhZuluft); syncAllSlidersToInputs(); calculateAll(); });
         
-        // Synchronisierte Eingabefelder (Schieberegler)
+        // Synced Inputs (Sliders)
         if (dom.volumenstromSlider) dom.volumenstromSlider.addEventListener('input', () => {
             dom.volumenstrom.value = dom.volumenstromSlider.value;
             dom.volumenstromLabel.textContent = formatGerman(parseFloat(dom.volumenstromSlider.value), 0);
@@ -459,5 +453,6 @@ document.addEventListener('DOMContentLoaded', () => {
     addEventListeners();
     handleKuehlerToggle();
     syncAllSlidersToInputs();
+    updateBetriebszeit('betriebstageGesamt'); // Sicherstellen, dass die Stunden zur neuen Tagesanzahl passen
     calculateAll();
 });
