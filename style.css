@@ -93,9 +93,10 @@ hr.light { border: none; border-top: 1px solid #e9ecef; margin: 1rem 0; }
 .config-grid { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
 .cost-analysis-grid { grid-template-columns: 1fr; }
 @media (min-width: 1200px) {
-    .cost-analysis-grid { grid-template-columns: repeat(3, 1fr); }
+    .cost-analysis-grid { grid-template-columns: 1.5fr 1fr 1fr; }
 }
-.parameter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem; }
+/* Layout-Korrektur: Grid für alle Parameter */
+.parameter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem 1.5rem; }
 
 /* --- Komponenten & Schalter --- */
 .switch-container { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 1rem;}
@@ -168,7 +169,13 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance
 #setReferenceBtn.activated { background-color: var(--success-color); }
 
 /* --- Ergebnisse & Kosten Tabellen --- */
-.cost-output-section h4, #reference-details h4 { border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; }
+.cost-output-section {
+    background: #fdfdff;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+.cost-output-section h4 { border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; }
 h4.annual-cost-header { margin-top: 2rem; }
 
 .results-table { border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; margin-top: 1rem; }
@@ -194,9 +201,9 @@ h4.annual-cost-header { margin-top: 2rem; }
 .cost-value.saving { color: var(--success-color) !important; }
 .cost-value.expense { color: var(--danger-color) !important; }
 
-#reference-details { border: none; }
-#reference-details h4 { margin-bottom: 1rem;}
-#reference-details .cost-display { grid-template-columns: 1.5fr 1fr; padding: 0.5rem 0; border: none; background: none !important;}
+#reference-details { border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; margin-top: 1rem; }
+#reference-details .cost-display { grid-template-columns: 1.5fr 1fr; border: none; background: none !important;}
+#reference-details .cost-display:nth-of-type(2n) { background-color: rgba(0,0,0,0.02) !important; }
 #reference-details .cost-display.parameter .cost-label { color: var(--label-color); font-weight: normal; }
 #reference-details .cost-display.reference .cost-label { font-weight: bold; }
 #reference-details .cost-display .cost-value { background: none; padding-right: 0;}
